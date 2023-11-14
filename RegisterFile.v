@@ -1,96 +1,53 @@
 module RegisterFile (
-     clock,                    // Clock signal input
-    Reset,                    // Reset signal input
-      read_register_1,    // Read register 1 input
-      read_register_2,    // Read register 2 input
-     reg_write_enable,         // Register write enable control signal
-     write_data,        // Data to be written into the register file
-     reg_write_address,  // Control signal from ControlUnit for write address
-    read_data_1,           // Output of read data from read_register_1
-    read_data_2,            // Output of read data from read_register_2
-	 ro,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r21,r22,r23,r24,r25,r26,r27,r28,r29,r30,r31,r32
+    input wire clock,                    // Clock signal input
+    input wire Reset,                    // Reset signal input
+    input wire [4:0] read_register_1,    // Read register 1 input
+    input wire [4:0] read_register_2,    // Read register 2 input
+    input wire reg_write_enable,         // Register write enable control signal
+    input wire [31:0] write_data,        // Data to be written into the register file
+    input wire [4:0] reg_write_address,  // Control signal from ControlUnit for write address
+    output [31:0] read_data_1,           // Output of read data from read_register_1
+    output [31:0] read_data_2            // Output of read data from read_register_2
 );
 
     wire [31:0] rin;
-	 input wire clock;                    // Clock signal input
-    input wire Reset;                    // Reset signal input
-    input wire [4:0] read_register_1;    // Read register 1 input
-    input wire [4:0] read_register_2;    // Read register 2 input
-    input wire reg_write_enable;         // Register write enable control signal
-    input wire [31:0] write_data;        // Data to be written into the register file
-    input wire [4:0] reg_write_address;  // Control signal from ControlUnit for write address
-    output [31:0] read_data_1;           // Output of read data from read_register_1
-    output [31:0] read_data_2;            // Output of read data from read_register_2
-	 output [31:0]ro,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r21,r22,r23,r24,r25,r26,r27,r28,r29,r30,r31,r32;
 
     wire [31:0] r0_out, r1_out, r2_out, r3_out, r4_out, r5_out, r6_out, r7_out, r8_out, r9_out, r10_out, r11_out, r12_out, r13_out, r14_out, r15_out, r16_out, r17_out, r18_out, r19_out, r20_out, r21_out, r22_out, r23_out, r24_out, r25_out, r26_out, r27_out, r28_out, r29_out, r30_out, r31_out;
-	assign ro=r0_out;
-	assign r1=r1_out;
-	assign r2=r2_out;
-	assign r3=r3_out;
-	assign r4=r4_out;
-	assign r5=r5_out;
-	assign r6=r6_out;
-	assign r7=r7_out;
-	assign r8=r8_out;
-	assign r9=r9_out;
-	assign r10=r10_out;
-	assign r11=r11_out;
-	assign r12=r12_out;
-	assign r13=r13_out;
-	assign r14=r14_out;
-	assign r15=r15_out;
-	assign r16=r16_out;
-	assign r17=r17_out;
-	assign r18=r18_out;
-	assign r19=r19_out;
-	assign r20=r20_out;
-	assign r21=r21_out;
-	assign r22=r22_out;
-	assign r23=r23_out;
-	assign r24=r24_out;
-	assign r25=r25_out;
-	assign r26=r26_out;
-	assign r27=r27_out;
-	assign r28=r28_out;
-	assign r29=r29_out;
-	assign r30=r30_out;
-	assign r31=r31_out;
 
     dec dee(reg_write_enable, reg_write_address, rin);
 
-    register r00(32'b0, clock, 1'b1, r0_out, rin[31]);
-    register r111(write_data, clock, Reset, r1_out, rin[30]);
-    register r211(write_data, clock, Reset, r2_out, rin[29]);
-    register r311(write_data, clock, Reset, r3_out, rin[28]);
-    register r41(write_data, clock, Reset, r4_out, rin[27]);
-    register r51(write_data, clock, Reset, r5_out, rin[26]);
-    register r61(write_data, clock, Reset, r6_out, rin[25]);
-    register r71(write_data, clock, Reset, r7_out, rin[24]);
-    register r811(write_data, clock, Reset, r8_out, rin[23]);
-    register r911(write_data, clock, Reset, r9_out, rin[22]);
-    register r101(write_data, clock, Reset, r10_out, rin[21]);
-    register r1111(write_data, clock, Reset, r11_out, rin[20]);
-    register r121(write_data, clock, Reset, r12_out, rin[19]);
-    register r131(write_data, clock, Reset, r13_out, rin[18]);
-    register r141(write_data, clock, Reset, r14_out, rin[17]);
-    register r151(write_data, clock, Reset, r15_out, rin[16]);
-    register r161(write_data, clock, Reset, r16_out, rin[15]);
-    register r171(write_data, clock, Reset, r17_out, rin[14]);
-    register r181(write_data, clock, Reset, r18_out, rin[13]);
-    register r191(write_data, clock, Reset, r19_out, rin[12]);
-    register r201(write_data, clock, Reset, r20_out, rin[11]);
-    register r2111(write_data, clock, Reset, r21_out, rin[10]);
-    register r221(write_data, clock, Reset, r22_out, rin[9]);
-    register r231(write_data, clock, Reset, r23_out, rin[8]);
-    register r241(write_data, clock, Reset, r24_out, rin[7]);
-    register r251(write_data, clock, Reset, r25_out, rin[6]);
-    register r261(write_data, clock, Reset, r26_out, rin[5]);
-    register r271(write_data, clock, Reset, r27_out, rin[4]);
-    register r281(write_data, clock, Reset, r28_out, rin[3]);
-    register r291(write_data, clock, Reset, r29_out, rin[2]);
-    register r301(write_data, clock, Reset, r30_out, rin[1]);
-    register r3111(write_data, clock, Reset, r31_out, rin[0]);
+    register r0(32'b0, clock, 1'b1, r0_out, rin[31]);
+    register r1(write_data, clock, Reset, r1_out, rin[30]);
+    register r2(write_data, clock, Reset, r2_out, rin[29]);
+    register r3(write_data, clock, Reset, r3_out, rin[28]);
+    register r4(write_data, clock, Reset, r4_out, rin[27]);
+    register r5(write_data, clock, Reset, r5_out, rin[26]);
+    register r6(write_data, clock, Reset, r6_out, rin[25]);
+    register r7(write_data, clock, Reset, r7_out, rin[24]);
+    register r8(write_data, clock, Reset, r8_out, rin[23]);
+    register r9(write_data, clock, Reset, r9_out, rin[22]);
+    register r10(write_data, clock, Reset, r10_out, rin[21]);
+    register r11(write_data, clock, Reset, r11_out, rin[20]);
+    register r12(write_data, clock, Reset, r12_out, rin[19]);
+    register r13(write_data, clock, Reset, r13_out, rin[18]);
+    register r14(write_data, clock, Reset, r14_out, rin[17]);
+    register r15(write_data, clock, Reset, r15_out, rin[16]);
+    register r16(write_data, clock, Reset, r16_out, rin[15]);
+    register r17(write_data, clock, Reset, r17_out, rin[14]);
+    register r18(write_data, clock, Reset, r18_out, rin[13]);
+    register r19(write_data, clock, Reset, r19_out, rin[12]);
+    register r20(write_data, clock, Reset, r20_out, rin[11]);
+    register r21(write_data, clock, Reset, r21_out, rin[10]);
+    register r22(write_data, clock, Reset, r22_out, rin[9]);
+    register r23(write_data, clock, Reset, r23_out, rin[8]);
+    register r24(write_data, clock, Reset, r24_out, rin[7]);
+    register r25(write_data, clock, Reset, r25_out, rin[6]);
+    register r26(write_data, clock, Reset, r26_out, rin[5]);
+    register r27(write_data, clock, Reset, r27_out, rin[4]);
+    register r28(write_data, clock, Reset, r28_out, rin[3]);
+    register r29(write_data, clock, Reset, r29_out, rin[2]);
+    register r30(write_data, clock, Reset, r30_out, rin[1]);
+    register r31(write_data, clock, Reset, r31_out, rin[0]);
 
 d d1 (
     .E(1'b1),
