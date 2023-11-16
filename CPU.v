@@ -8,19 +8,33 @@ module CPU (
 	 BT_test,
 	 BT_or_next_pc_test,
 	 branch_or_not_test,
-	 selected_write_register_test,
+	 register_write_enable_test,
+	 selected_write_register_address_test,
 	 write_data_test,
 	 register_1_read_address_test,
-	 read_data_1_test,
 	 register_2_read_address_test,
-	 read_data_2_test,
-	 alu_control_test
-);
+	 alu_control_test,
+	 Alu_Operand_A_from_reg_test,
+	 Alu_Operand_B_from_reg_or_RAM_test,
+	 immediate_data_from_instruction_operand_B_test,
+	 ALU_operand_B_result_test,
+	 shift_amount_test,
+	 ALU_result_test,
+	 RAM_address_test,
+	 zero_flag_test,
+	 less_flag_test,
+	 RAM_result_test
+	 );
 
-input MAX10_CLK1_50;        // Clock input from DE-10 Lite FPGA (50MHZ)
+/* ******************* inputs for CPU ******************** */
+
+input MAX10_CLK1_50;        
 input reset;
 
-// Program Counter (PC) and Instruction Signals
+
+
+/* **************** Program Counter (PC) and Instruction test Signals  ************** */
+
 wire [7:0] pc_next;            // PC Output (ROM address)
 output [7:0] pc_next_test;
 assign pc_next_test = pc_next;
@@ -36,7 +50,10 @@ assign instruction_test = instruction;
 output [15:0] BT_immediate_test;  // the value that should be added to PC to calculate the branch target
 assign BT_immediate_test = instruction;
 
-// Branch Target Calculation Signals
+
+
+/* **************** Branch Target Calculation test Signals ********************* */
+
 wire [7:0] BT;                // Branch Target
 output [7:0] BT_test;
 assign BT_test = BT;
@@ -49,85 +66,115 @@ wire branch_or_not;            // Branch or Not Signal
 output branch_or_not_test;
 assign branch_or_not_test = branch_or_not;
 
-// Register File Signals
 
-// Selected Register for Write
-wire [4:0] selected_register;   
-output [4:0] selected_write_register_test;
-assign selected_write_register_test = selected_register;
 
-// Data to Write in Register
+/* ********************** Register File test Signals ************************ */
+
+// register write enable signal 
+wire write_en;
+output register_write_enable_test;
+assign register_write_enable_test = write_en;
+
+// Selected Register address for Write - 5 bits
+wire [4:0] write_register;     // Write Register   
+output [4:0] selected_write_register_address_test;
+assign selected_write_register_address_test = write_register;
+
+// Data to Write in Register - 32 bits
 wire [31:0] reg_or_mem_or_ra;  
 output [31:0] write_data_test;
 assign write_data_test = reg_or_mem_or_ra;
 
-// register 1 address to be read from
-wire [4:0] read_register_1;    // (ALU Operand)
+// register 1 address to be read from (ALU Operand A)
+wire [4:0] read_register_1;   
 output [4:0] register_1_read_address_test;
 assign register_1_read_address_test = read_register_1;
 
-// Data output from Register 1 choosen above 
-wire [31:0] alu_operand_A;     // ALU Operand A
-output [31:0] read_data_1_test;
-assign read_data_1_test = alu_operand_A;
 
-// register 2 address to be read from
+// register 2 address to be read from (ALU Operand b or write to ram)
 wire [4:0] read_register_2; 
 output [4:0] register_2_read_address_test;
 assign register_2_read_address_test = read_register_2;
 
-// Data output from Register 2 choosen above
-wire [31:0] alu_operand_B;     // ALU Operand b or write to ram
-output [31:0] read_data_2_test;
-assign read_data_2_test = alu_operand_B;
 
 
 
+/* **************** ALU Control test Signals ********************** */
 
-
-
-
-
-// Assign ALU Control Signals
-wire [3:0] alu_control;        // ALU Control Signals
+// ALU operation
+wire [3:0] alu_control;        
 output [3:0] alu_control_test;
 assign alu_control_test = alu_control;
 
 
+// Data output from Register 1 choosen above (ALU Operand A & jump register address mux)
+wire [31:0] alu_operand_A;     
+output [31:0] Alu_Operand_A_from_reg_test;
+assign Alu_Operand_A_from_reg_test = alu_operand_A;
 
-wire [4:0] rom_address;        // Address to access ROM
+// Data output from Register 2 choosen above (ALU Operand b or write to ram)
+wire [31:0] alu_operand_B;     
+output [31:0] Alu_Operand_B_from_reg_or_RAM_test;
+assign Alu_Operand_B_from_reg_or_RAM_test = alu_operand_B;
+
+// immediate data from instruction [15:0] - choose immediate data or data output from reg to ALU operand B
+wire [31:0] sign_extended_imm;
+output [31:0] immediate_data_from_instruction_operand_B_test;
+assign immediate_data_from_instruction_operand_B_test = sign_extended_imm;
+
+// mux result for ALU operand B - between register output or immediate data from instruction
+wire [31:0] operand_B;
+output [31:0] ALU_operand_B_result_test;
+assign ALU_operand_B_result_test = operand_B;
+
+// shift amount for ALU - instruction [10:6]
+//wire [4:0] shmant;
+output [4:0] shift_amount_test;
+//assign shift_amount_test = shmant;
+
+// ALU result 
+wire [31:0] alu_result;
+output [31:0] ALU_result_test;
+assign ALU_result_test = alu_result;
+
+// Address to access RAM from ALU
+wire [9:0] ram_address;        
+output [9:0] RAM_address_test;
+assign RAM_address_test = ram_address;
+
+// Zero Signal from ALU
+wire zero;                     
+output zero_flag_test;
+assign zero_flag_test = zero;
+
+// Less Signal from ALU
+wire less;                     
+output less_flag_test;
+assign less_flag_test = less;
+
+
+/* ********************** RAM test Signals ************************ */
+wire [31:0] ram_result;        // Data from RAM
+output [31:0] RAM_result_test;
+assign RAM_result_test = ram_result;
+
+
+
+
 wire alu_src;                  // ALU Source Selector
 wire jumptwocon;               // Jump to CONtrol unit
-wire write_en;                 // Register Write Enable
 wire jump;                     // Jump Instruction Signal
 wire [31:0] jump_or_next_pc_or_branch; // MUX Output (Jump or Next PC or Branch)
 wire branch;                   // Branch Instruction Signal
-
-
-
-// ALU and Control Signals
-
-
-wire [4:0] write_register;     // Write Register
-wire [31:0] alu_result;       // ALU Result
 wire zero_flag;                // Zero Flag Signal
-
-wire [31:0] operand_B;         // Operand B for ALU
-wire zero;                     // Zero Signal
 wire jr;                       // Jump to Register Signal
-
-// Additional Control Signals
-
-wire less;                     // Less Signal
-
-wire [31:0] ram_result;        // Data from RAM
-
 wire mem_reg_selector;         // Memory or Register Selector
 wire [31:0] jump_or_next_pc_or_branch_or_jr; // MUX Output (Jump or Next PC or Branch or JR)
-//wire [31:0] mem_reg_result;    // Data Output from Memory or Register File
 wire ram_read_enable;          // RAM Read Enable Signal
 wire jal;                      // Jump and Link Instruction Signal
 wire ram_write_enable;         // RAM Write Enable Signal
+
+
 
 // Branch Condition Signals
 wire branchnotequal;           // Branch Not Equal Signal
@@ -177,9 +224,6 @@ BranchLogic branch_or_no(
     .branch_or_not(branch_or_not)
 );
 
-										
-
-		
 	
 // Instantiate a 2x1 multiplexer to select the jump address if it's a jump instruction
 Mux2x1 chooseJUMP (
@@ -190,8 +234,6 @@ Mux2x1 chooseJUMP (
 );
 
 
-
-
 // Instantiate a 2x1 multiplexer to select the register address if it's a JR (Jump Register) instruction
 Mux2x1 jumptoregister (
     .i0(jump_or_next_pc_or_branch),         // Input 0: Output of the previous multiplexer (jump address, next PC, or branch target)
@@ -199,7 +241,6 @@ Mux2x1 jumptoregister (
     .sel(jr),                               // Select signal to choose between inputs
     .out(jump_or_next_pc_or_branch_or_jr)   // Output signal, either the selected address or ALU operand A
 );
-
 
 
 // Instantiate the ROM module     -- containts 256 words each word is 32 bits
