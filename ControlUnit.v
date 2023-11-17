@@ -101,7 +101,8 @@ localparam FUN_SLT = 6'b101010;
 
 always@(posedge clk)
 begin 
-	 if (reset) begin
+	 if (reset) 
+	 begin
         // Reset all control signals and control state to their default values
         alu_op <= 4'b0000;
         alu_src <= 1'b0;
@@ -115,64 +116,42 @@ begin
         pc_increment <= 1'b0;
 		  jump<=0;
 		  branchnotequal<=0;
-			brachlessthat<=0;
-			branchgreaterthan<=0;
-			branchlessthanorequal<=0;
-		branchgreaterthanorequal<=0;
-	 brancheq<=0;
-	 jr<=0;
-	 jal<=0;
-		  end
+		  brachlessthat<=0;
+		  branchgreaterthan<=0;
+		  branchlessthanorequal<=0;
+		  branchgreaterthanorequal<=0;
+		  brancheq<=0;
+		  jr<=0;
+		  jal<=0;
+		end
 	else 
 		begin
-			case (instruction[31:26])
-				OP_ADD:
+		case (instruction[31:26])
+			OP_ADD:
+			begin
+				case(instruction[5:0])
+					FUN_ADD:
 					begin
-											case(instruction[5:0])
-												FUN_ADD:
-												begin
-			
-
-
-
-			
-        
-        
-        
-        
-       
-       
-		
-													pc_increment <= 1'b1;
-													mem_to_reg <= 1'b0;
-													alu_src <= 1'b1;
-													alu_op <= 4'b0010;
-													 jr<=0;
-														jal<=0;
-													 ram_read_enable <= 1'b0;
-														ram_write_enable <= 1'b0;
-														reg_write_enable <= 1'b1;
-														read_register_1 <= instruction[25:21];
-														read_register_2 <= instruction[20:16];  // send reg2 -> register file -> ALU_MUX -> ALU operand B
-														write_register <= instruction[15:11];
-														 branchnotequal<=0;
-														brachlessthat<=0;
-														branchgreaterthan<=0;
-														branchlessthanorequal<=0;
-													branchgreaterthanorequal<=0;
-												 brancheq<=0;
-												 jump<=0;
-											
-														
-														
-												end
-											
-												
-													 
-														
-												  
-												  
-													
+						pc_increment <= 1'b1;
+						mem_to_reg <= 1'b0;
+						alu_src <= 1'b0;
+						alu_op <= 4'b0010;
+						jr<=0;
+						jal<=0;
+						ram_read_enable <= 1'b0;
+						ram_write_enable <= 1'b0;
+						reg_write_enable <= 1'b1;
+						read_register_1 <= instruction[25:21];
+						read_register_2 <= instruction[20:16];  // send reg2 -> register file -> ALU_MUX -> ALU operand B
+						write_register <= instruction[15:11];
+						branchnotequal<=0;
+						brachlessthat<=0;
+						branchgreaterthan<=0;
+						branchlessthanorequal<=0;
+						branchgreaterthanorequal<=0;
+						brancheq<=0;
+						jump<=0;											
+					end
 												
 												FUN_SUB:
 												begin
@@ -197,14 +176,6 @@ begin
 										 brancheq<=0;
 										 jump<=0;
 										 
-										  
-        
-        
-		  
-		
-														
-														
-													
 												
 												
 												end
@@ -341,70 +312,71 @@ begin
 												  end
 							endcase
 					 end
-					OP_ADDI:
-					begin
+			OP_ADDI:
+				begin
 					pc_increment <= 1'b1;
-					 ram_read_enable <= 1'b0;
-							ram_write_enable <= 1'b0;
-					 alu_op <= 4'b0010; // ALU control for ADD
-            			alu_src <= 1'b1;
-            			reg_write_enable <= 1'b1;
-            			read_register_1 <= instruction[25:21];
-            			write_register <= instruction[20:16]; 
-							jump<=0;
-								 branchnotequal<=0;
-								brachlessthat<=0;
-								branchgreaterthan<=0;
-								branchlessthanorequal<=0;
-								branchgreaterthanorequal<=0;
-								brancheq<=0;
-								 jr<=0;
-								 jal<=0;
-					 
-					end
-				OP_ADDU:
-												begin
-												 ram_read_enable <= 1'b0;
-														ram_write_enable <= 1'b0;
-														 jr<=0;
-														 jal<=0;
-												pc_increment <= 1'b1;
-												alu_op <= 4'b1100;
-														reg_write_enable <= 1'b1;
-														read_register_1 <= instruction[25:21];
-														read_register_2 <= instruction[20:16];
-														write_register <= instruction[15:11];
-														 jump<=0;
-														 	 branchnotequal<=0;
-															brachlessthat<=0;
-															branchgreaterthan<=0;
-															branchlessthanorequal<=0;
-														branchgreaterthanorequal<=0;
-													 brancheq<=0;
-														end
+					ram_read_enable <= 1'b0;
+					ram_write_enable <= 1'b0;
+					alu_op <= 4'b0010; 
+            	alu_src <= 1'b1;
+            	reg_write_enable <= 1'b1;
+            	read_register_1 <= instruction [25:21];
+            	write_register <= instruction [20:16]; 
+					jump <= 0;
+					branchnotequal <= 0;
+					brachlessthat <= 0;
+					branchgreaterthan <= 0;
+					branchlessthanorequal <= 0;
+					branchgreaterthanorequal <= 0;
+					brancheq <= 0;
+					jr <= 0;
+					jal <= 0;
+			
+				end
+			
+			OP_ADDU:
+				begin
+					ram_read_enable <= 1'b0;
+					ram_write_enable <= 1'b0;
+					jr <= 0;
+					jal<=0;
+					pc_increment <= 1'b1;
+					alu_op <= 4'b1100;
+					reg_write_enable <= 1'b1;
+					read_register_1 <= instruction[25:21];
+					read_register_2 <= instruction[20:16];
+					write_register <= instruction[15:11];
+					jump<=0;
+					branchnotequal<=0;
+					brachlessthat<=0;
+					branchgreaterthan<=0;
+					branchlessthanorequal<=0;
+					branchgreaterthanorequal<=0;
+					brancheq<=0;
+				end
 					
-				OP_ANDI:
-					begin
+			OP_ANDI:
+				begin
 					pc_increment <= 1'b1;
-						alu_op <= 4'b0100; // Set ALU control for AND
-							alu_src <= 1'b1;
-							reg_write_enable <= 1'b1;
-							read_register_1 <= instruction[25:21];
-							write_register <= instruction[20:16];
-								 jump<=0;
-								  jr<=0;
-							jal<=0;
-						 ram_read_enable <= 1'b0;
-							ram_write_enable <= 1'b0;
-							 branchnotequal<=0;
-							brachlessthat<=0;
-							branchgreaterthan<=0;
-							branchlessthanorequal<=0;
-							branchgreaterthanorequal<=0;
-							brancheq<=0;
-							 jr<=0;
-							 jal<=0;
-					end
+					alu_op <= 4'b0100; // Set ALU control for AND
+					alu_src <= 1'b1;
+					reg_write_enable <= 1'b1;
+					read_register_1 <= instruction[25:21];
+					write_register <= instruction[20:16];
+					jump<=0;
+					jr<=0;
+					jal<=0;
+					ram_read_enable <= 1'b0;
+					ram_write_enable <= 1'b0;
+					branchnotequal<=0;
+					brachlessthat<=0;
+					branchgreaterthan<=0;
+					branchlessthanorequal<=0;
+					branchgreaterthanorequal<=0;
+					brancheq<=0;
+					jr<=0;
+					jal<=0;
+				end
 				
 					OP_ORI:
 					begin
@@ -694,50 +666,35 @@ begin
 													 brancheq<=0;
 		  
 		  end
-		   OP_BLT:
-					begin
-				 alu_op <= 4'b0011;
-				  jr<=0;
-				  jal<=0;
-        alu_src <= 1'b1;
-        reg_write_enable <= 1'b0;
-        mem_to_reg <= 1'bx;
-        ram_read_enable <= 1'b0;
-        ram_write_enable <= 1'b0;
+	
+	OP_BLT:
+		begin
+			alu_op <= 4'b0011;
+			jr<=0;
+			jal<=0;
+			alu_src <= 1'b1;
+			reg_write_enable <= 1'b0;
+			mem_to_reg <= 1'bx;
+			ram_read_enable <= 1'b0;
+			ram_write_enable <= 1'b0;
          read_register_1 <= instruction[25:21];
-        read_register_2 <= instruction[20:16];
-        write_register <= 5'b0;
-    
-        pc_increment <= 1'b1;
-		  jump<=0;
-		 	 branchnotequal<=0;
+			read_register_2 <= instruction[20:16];
+			write_register <= 5'b0;
+			pc_increment <= 1'b1;
+			jump<=0;
+			branchnotequal<=0;
 			brachlessthat<=1;
 			branchgreaterthan<=0;
 			branchlessthanorequal<=0;
 			branchgreaterthanorequal<=0;
 			brancheq<=0;
 		  
-		  end
-		   
-		  
-		   
-		  
-		  
-		  		
-					default: alu_op <= 4'b0000;
-				endcase
-			
-			
-		end
-
-
+		  end		  		
+	
+			default: alu_op <= 4'b0000;
+	
+		endcase
+	end
 end
-
-
-
-
-
-
-
 
 endmodule

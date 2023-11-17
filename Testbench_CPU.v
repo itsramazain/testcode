@@ -31,13 +31,18 @@ wire [31:0] Alu_Operand_A_from_reg_test;    // output data from registers (outpu
 wire [31:0] Alu_Operand_B_from_reg_or_RAM_test;    // output data from registers (output 2)
 wire [31:0] immediate_data_from_instruction_operand_B_test; //immediate data from instruction
 wire [31:0] ALU_operand_B_result_test; // mux result for ALU operand B - between register output or immediate data from instruction
+wire ALU_src_selector_signal; // Control signal to choose input (0 for sign-extended_imm, 1 for read_register_2)
 wire [4:0] shift_amount_test; // shift amount for ALU
 wire [31:0] ALU_result_test;  // ALU result test
 wire [9:0] RAM_address_test;   // Address to access RAM from ALU
 wire zero_flag_test;
 wire less_flag_test;
-wire [31:0] RAM_result_test;
 
+
+wire [31:0] RAM_result_test;
+wire [31:0] ALU_or_RAM_result_test;
+wire ALU_or_RAM_select_signal_test;
+wire RAM_write_enable_signal_test;
 
 // Instantiate CPU module
 CPU my_cpu (
@@ -63,12 +68,17 @@ CPU my_cpu (
 	 .Alu_Operand_B_from_reg_or_RAM_test( Alu_Operand_B_from_reg_or_RAM_test),
 	 .immediate_data_from_instruction_operand_B_test(immediate_data_from_instruction_operand_B_test),
 	 .ALU_operand_B_result_test(ALU_operand_B_result_test),
+	 .ALU_src_selector_signal(ALU_src_selector_signal),
 	 .shift_amount_test(shift_amount_test),
 	 .ALU_result_test(ALU_result_test),
 	 .RAM_address_test(RAM_address_test),
 	 .zero_flag_test(zero_flag_test),
 	 .less_flag_test(less_flag_test),
-	 .RAM_result_test(RAM_result_test)
+	 
+	 .RAM_result_test(RAM_result_test),
+	 .ALU_or_RAM_result_test(ALU_or_RAM_result_test),
+	 .ALU_or_RAM_select_signal_test(ALU_or_RAM_select_signal_test),
+	 .RAM_write_enable_signal_test(RAM_write_enable_signal_test)
 	 );
 
 

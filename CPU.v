@@ -18,12 +18,16 @@ module CPU (
 	 Alu_Operand_B_from_reg_or_RAM_test,
 	 immediate_data_from_instruction_operand_B_test,
 	 ALU_operand_B_result_test,
+	 ALU_src_selector_signal,
 	 shift_amount_test,
 	 ALU_result_test,
 	 RAM_address_test,
 	 zero_flag_test,
 	 less_flag_test,
-	 RAM_result_test
+	 RAM_result_test,
+	 ALU_or_RAM_result_test,
+	 ALU_or_RAM_select_signal_test,
+	 RAM_write_enable_signal_test 
 	 );
 
 /* ******************* inputs for CPU ******************** */
@@ -127,10 +131,14 @@ wire [31:0] operand_B;
 output [31:0] ALU_operand_B_result_test;
 assign ALU_operand_B_result_test = operand_B;
 
+// Control signal to choose input (0 for sign-extended_imm, 1 for read_register_2)
+wire alu_src;    
+output ALU_src_selector_signal;
+assign ALU_src_selector_signal = alu_src;
+
 // shift amount for ALU - instruction [10:6]
-//wire [4:0] shmant;
 output [4:0] shift_amount_test;
-//assign shift_amount_test = shmant;
+assign shift_amount_test = instruction[15:0];
 
 // ALU result 
 wire [31:0] alu_result;
@@ -158,22 +166,32 @@ wire [31:0] ram_result;        // Data from RAM
 output [31:0] RAM_result_test;
 assign RAM_result_test = ram_result;
 
+// result when choose between ALU OR RAM result
+wire [31:0] mem_reg_result;
+output [31:0] ALU_or_RAM_result_test;
+assign ALU_or_RAM_result_test = mem_reg_result;
+
+// signal to select between RAM or ALU result
+wire mem_reg_selector;         // Memory or Register Selector
+output ALU_or_RAM_select_signal_test;
+assign ALU_or_RAM_select_signal_test = mem_reg_selector;
+
+// RAM Write Enable Signal
+wire ram_write_enable;         
+output RAM_write_enable_signal_test;
+assign RAM_write_enable_signal_test = ram_write_enable;
 
 
 
-wire alu_src;                  // ALU Source Selector
 wire jumptwocon;               // Jump to CONtrol unit
 wire jump;                     // Jump Instruction Signal
 wire [31:0] jump_or_next_pc_or_branch; // MUX Output (Jump or Next PC or Branch)
 wire branch;                   // Branch Instruction Signal
 wire zero_flag;                // Zero Flag Signal
 wire jr;                       // Jump to Register Signal
-wire mem_reg_selector;         // Memory or Register Selector
 wire [31:0] jump_or_next_pc_or_branch_or_jr; // MUX Output (Jump or Next PC or Branch or JR)
 wire ram_read_enable;          // RAM Read Enable Signal
 wire jal;                      // Jump and Link Instruction Signal
-wire ram_write_enable;         // RAM Write Enable Signal
-
 
 
 // Branch Condition Signals
@@ -195,7 +213,7 @@ ProgramCounter program_counter (
 
 
 // Instantiate a 2x1 multiplexer to select the branch target or next program counter
-Mux2x1 BT_OR_nextPC (
+Mux2x1 Branch_target_OR_PC (
     .i0(pc_next),              // Input 0: Next program counter value
     .i1(BT),                   // Input 1: Branch target value
     .sel(branch_or_not),       // Select signal to choose between inputs
@@ -212,7 +230,7 @@ Branch_Target_Calculator branch_calc(
 		);
 		
 // Choose between branch or next instruction logic				
-BranchLogic branch_or_no(
+BranchLogic branch_or_next_instruction(
     .brancheq(brancheq),
     .branchnotequal(branchnotequal),
     .brachlessthat(brachlessthat),
@@ -244,7 +262,7 @@ Mux2x1 jumptoregister (
 
 
 // Instantiate the ROM module     -- containts 256 words each word is 32 bits
-ROM32x256 rom(
+ROM32x256 ROM (
     .clock(MAX10_CLK1_50),                             // input for clock
 	 .address(jump_or_next_pc_or_branch_or_jr),         // input - 8 bits address from PC
     .q(instruction)                                    // ROM output - 32 bits instruction
@@ -282,15 +300,15 @@ ControlUnit control_unit (
 
 
 // Connect RegisterFile's read_data_1 and read_data_2 to read_register_1 and read_register_2
-Mux2x1 reg_or_ra_selector (
-    .i0(mem_reg_result),        // Input 0: Data from ALU result
+Mux2x1 ALU_or_JAL_selector (
+    .i0(mem_reg_result),        // Input 0: Data from ALU or RAM result
     .i1(pc_next + 32'd2),       // Input 1: PC + 2 for the jal instruction
     .sel(jal),                  // Selector: Determines the output
     .out(reg_or_mem_or_ra)      // Output: Selected data for the register or ra
 );
 
 
-RegisterFile register_file (
+RegisterFile Register_File (
     .clock(MAX10_CLK1_50),                       // Clock input
     .Reset(reset),                               // Reset signal
     .read_register_1(read_register_1),           // Read register 1 address
@@ -302,10 +320,8 @@ RegisterFile register_file (
     .read_data_2(alu_operand_B)                  // Data read from read_register_2
 );
 
-
-
 // Instantiate the ALU module and connect the ALU control signal
-ALU my_alu (
+ALU Alu (
     .clk(MAX10_CLK1_50),                     // Clock input
     .reset(reset),                           // Reset signal
     .operand_A(alu_operand_A),               // ALU input A
@@ -314,16 +330,16 @@ ALU my_alu (
     .alu_result(alu_result),                 // ALU result
     .zero_flag(zero_flag),                   // Zero flag output
     .ram_address(ram_address),               // RAM address output
-    .shmant(instruction[10:6]),              // Shift amount from instruction
+    .shmant(instruction[15:0]),              // Shift amount from instruction
     .zero(zero),                             // Zero signal
     .less(less)                              // Less signal
 );
 
 
 // ALU Operand Mux: Selects between sign-extended immediate value and ALU operand B.
-Mux2x1 alu_operand (
-    .i0(sign_extended_imm),   // Input 0: Sign-extended immediate value
-    .i1(alu_operand_B),       // Input 1: ALU operand B (read_register_2)
+Mux2x1 ALU_operand_selector (
+    .i0(alu_operand_B),   // Input 0: Sign-extended immediate value
+    .i1(sign_extended_imm),       // Input 1: ALU operand B (read_register_2)
     .sel(alu_src),            // Selector: Control signal to choose input (0 for sign-extended_imm, 1 for read_register_2)
     .out(operand_B)           // Output: Selected ALU operand B
 );
@@ -331,14 +347,14 @@ Mux2x1 alu_operand (
 
 
 
-SignExtendImmediate sign_extend (
+SignExtendImmediate sign_extension (
     .clk(MAX10_CLK1_50),                      // Clock input
     .reset(reset),                            // Reset signal
     .instruction(instruction[15:0]),          // Instruction immediate field
     .sign_extended_imm(sign_extended_imm)     // Sign-extended immediate value
 );
 
-RAM32x1024 ram (
+RAM32x1024 RAM (
     .address(ram_address),                    // RAM address
     .clock(MAX10_CLK1_50),                    // Clock input
     .data(alu_operand_B),                     // Data input to RAM
@@ -348,9 +364,9 @@ RAM32x1024 ram (
 );
 
 // Memory Register Select Mux: Selects between data from RAM and ALU result.
-Mux2x1 mem_reg_select (
-    .i0(ram_result),          // Input 0: Data from RAM
-    .i1(alu_result),          // Input 1: Data from ALU result
+Mux2x1 ALU_or_RAM_selector (
+    .i0(alu_result),          // Input 0: Data from RAM
+    .i1(ram_result),          // Input 1: Data from ALU result
     .sel(mem_reg_selector),   // Selector: MUX selection control
     .out(mem_reg_result)      // Output: Selected data for memory register
 );
