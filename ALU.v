@@ -6,7 +6,6 @@ module ALU (
     input wire [31:0] operand_B,     // Input operand B
     input wire [3:0] alu_control,    // ALU control signals
     output wire [31:0] alu_result,   // ALU result
-    output wire zero_flag,           // Zero flag
     output wire [9:0] ram_address,   // 10-bit wide address for the RAM
     output wire overflow,            // Overflow flag
     output wire zero,                // Zero output
@@ -102,7 +101,6 @@ module ALU (
     end
 
     assign alu_result = temp_result[31:0];                    // Assign the temporary result to alu_result
-    assign zero_flag = (temp_result == 31'b0) ? 1'b1 : 1'b0;  // Set zero flag based on temp_result
     assign overflow = over_flow_temp;
     assign zero = (alu_result === 0) ? 1 : 0;
     assign ram_address = alu_result[31:0];                    // Assign the lower 5 bits of ALU result as the RAM address

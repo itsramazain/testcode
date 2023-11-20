@@ -27,7 +27,8 @@ module CPU (
 	 RAM_result_test,
 	 ALU_or_RAM_result_test,
 	 ALU_or_RAM_select_signal_test,
-	 RAM_write_enable_signal_test 
+	 RAM_write_enable_signal_test,
+	 RAM_read_enable_signal_test
 	 );
 
 /* ******************* inputs for CPU ******************** */
@@ -162,6 +163,7 @@ assign less_flag_test = less;
 
 
 /* ********************** RAM test Signals ************************ */
+
 wire [31:0] ram_result;        // Data from RAM
 output [31:0] RAM_result_test;
 assign RAM_result_test = ram_result;
@@ -181,18 +183,22 @@ wire ram_write_enable;
 output RAM_write_enable_signal_test;
 assign RAM_write_enable_signal_test = ram_write_enable;
 
+// RAM read enable signal
+wire ram_read_enable;       
+output RAM_read_enable_signal_test;
+assign RAM_read_enable_signal_test = ram_read_enable;
+
+
+
 
 
 wire jumptwocon;               // Jump to CONtrol unit
 wire jump;                     // Jump Instruction Signal
 wire [31:0] jump_or_next_pc_or_branch; // MUX Output (Jump or Next PC or Branch)
 wire branch;                   // Branch Instruction Signal
-wire zero_flag;                // Zero Flag Signal
 wire jr;                       // Jump to Register Signal
 wire [31:0] jump_or_next_pc_or_branch_or_jr; // MUX Output (Jump or Next PC or Branch or JR)
-wire ram_read_enable;          // RAM Read Enable Signal
 wire jal;                      // Jump and Link Instruction Signal
-
 
 // Branch Condition Signals
 wire branchnotequal;           // Branch Not Equal Signal
@@ -328,7 +334,6 @@ ALU Alu (
     .operand_B(operand_B),                   // ALU input B
     .alu_control(alu_control),               // ALU control signal
     .alu_result(alu_result),                 // ALU result
-    .zero_flag(zero_flag),                   // Zero flag output
     .ram_address(ram_address),               // RAM address output
     .shmant(instruction[15:0]),              // Shift amount from instruction
     .zero(zero),                             // Zero signal

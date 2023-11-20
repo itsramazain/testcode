@@ -43,6 +43,7 @@ wire [31:0] RAM_result_test;
 wire [31:0] ALU_or_RAM_result_test;
 wire ALU_or_RAM_select_signal_test;
 wire RAM_write_enable_signal_test;
+wire RAM_read_enable_signal_test;
 
 // Instantiate CPU module
 CPU my_cpu (
@@ -78,7 +79,8 @@ CPU my_cpu (
 	 .RAM_result_test(RAM_result_test),
 	 .ALU_or_RAM_result_test(ALU_or_RAM_result_test),
 	 .ALU_or_RAM_select_signal_test(ALU_or_RAM_select_signal_test),
-	 .RAM_write_enable_signal_test(RAM_write_enable_signal_test)
+	 .RAM_write_enable_signal_test(RAM_write_enable_signal_test),
+	 .RAM_read_enable_signal_test(RAM_read_enable_signal_test)
 	 );
 
 

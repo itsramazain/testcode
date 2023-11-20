@@ -138,7 +138,7 @@ begin
 						alu_op <= 4'b0010;
 						jr<=0;
 						jal<=0;
-						ram_read_enable <= 1'b0;
+						//ram_read_enable <= 1'b1;
 						ram_write_enable <= 1'b0;
 						reg_write_enable <= 1'b1;
 						read_register_1 <= instruction[25:21];
@@ -192,7 +192,7 @@ begin
 														 jump=0;
 														 jr<=0;
 														 jal<=0;
-													 ram_read_enable <= 1'b0;
+													 //ram_read_enable <= 1'b0;
 														ram_write_enable <= 1'b0;
 														 
 														brachlessthat<=0;
@@ -217,7 +217,7 @@ begin
 															branchlessthanorequal<=0;
 														branchgreaterthanorequal<=0;
 													 brancheq<=0;
-													 ram_read_enable <= 1'b0;
+													 //ram_read_enable <= 1'b0;
 														ram_write_enable <= 1'b0;
 														 jr<=0;
 														 jal<=0;
@@ -480,48 +480,47 @@ begin
 					
 					end
 					
-				OP_LW:
-					begin
-					pc_increment <= 1'b1;
-						alu_op <= 4'b0010;
-            			alu_src <= 1'b0;
-            			reg_write_enable <= 1'b1;
-            			mem_to_reg <= 1'b1;
-            			ram_read_enable <= 1'b1;
-            			read_register_1 <= instruction[25:21];
-            			write_register <= instruction[20:16];
-							 jr<=0;
-							 jal<=0;
-							 jump<=0;
-							 	 branchnotequal<=0;
-															brachlessthat<=0;
-															branchgreaterthan<=0;
-															branchlessthanorequal<=0;
-														branchgreaterthanorequal<=0;
-													 brancheq<=0;
-						 
-					  
-					end
 				OP_SW:
 					begin
 					pc_increment <= 1'b1;
-						alu_op <= 4'b0010;
-            			alu_src <= 1'b0;
-            			ram_write_enable <= 1'b1;
-            			read_register_1 <= instruction[25:21];
-            			read_register_2 <= instruction[20:16];
-							write_register <= 5'b0;
-							 jump<=0;
-							 	  jr<=0;jal<=0;
-								 branchnotequal<=0;
-															brachlessthat<=0;
-															branchgreaterthan<=0;
-															branchlessthanorequal<=0;
-														branchgreaterthanorequal<=0;
-													 brancheq<=0;
-						 
-					  
+					alu_op <= 4'b0010;
+					alu_src <= 1'b1;
+					reg_write_enable <= 1'b1;
+					mem_to_reg <= 1'b1;
+					ram_read_enable <= 1'b1;
+					read_register_1 <= instruction[25:21];
+					write_register <= instruction[20:16];
+					jr<=0;
+					jal<=0;
+					jump<=0;
+					branchnotequal<=0;
+					brachlessthat<=0;
+					branchgreaterthan<=0;
+					branchlessthanorequal<=0;
+					branchgreaterthanorequal<=0;
+					brancheq<=0;				
 					end
+				
+				OP_LW:
+					begin
+					pc_increment <= 1'b1;
+					alu_op <= 4'b0010;
+            	alu_src <= 1'b0;
+            	ram_write_enable <= 1'b1;
+            	read_register_1 <= instruction[25:21];
+            	read_register_2 <= instruction[20:16];
+					write_register <= 5'b0;
+					jump<=0;
+					jr<=0;jal<=0;
+					branchnotequal<=0;
+					brachlessthat<=0;
+					branchgreaterthan<=0;
+					branchlessthanorequal<=0;
+					branchgreaterthanorequal<=0;
+					brancheq<=0;					  
+					end
+				
+				
 				OP_JUMP:
 					begin
 				 alu_op <= 4'bxxxx;
