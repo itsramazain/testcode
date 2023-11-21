@@ -155,7 +155,7 @@ Mux2x1 BT_OR_nextPC (
     .out(BT_or_next_pc)        // Output signal, either the branch target or next program counter
 );
 
-
+defparam BT_OR_nextPC.n=8;
 
 // Instantiate the branch target calculator module
 Branch_Target_Calculator branch_calc(
@@ -188,7 +188,7 @@ Mux2x1 chooseJUMP (
     .sel(jump),                               // Select signal to choose between inputs
     .out(jump_or_next_pc_or_branch)           // Output signal, either the jump address or next program counter or branch target
 );
-
+defparam chooseJUMP.n=8;
 
 
 
@@ -200,7 +200,7 @@ Mux2x1 jumptoregister (
     .out(jump_or_next_pc_or_branch_or_jr)   // Output signal, either the selected address or ALU operand A
 );
 
-
+ defparam jumptoregister.n=8;
 
 // Instantiate the ROM module     -- containts 256 words each word is 32 bits
 ROM32x256 rom(
@@ -297,13 +297,14 @@ SignExtendImmediate sign_extend (
     .sign_extended_imm(sign_extended_imm)     // Sign-extended immediate value
 );
 
+
+
 RAM32x1024 ram (
-    .address(ram_address),                    // RAM address
-    .clock(MAX10_CLK1_50),                    // Clock input
-    .data(alu_operand_B),                     // Data input to RAM
-    .rden(ram_read_enable),                   // RAM read enable
-    .wren(ram_write_enable),                  // RAM write enable
-    .q(ram_result)                            // RAM data output
+    .adress(ram_address),                    // RAM address
+    .data_in(alu_operand_B),                     // Data input to RAM
+    .Readmem(ram_read_enable),                   // RAM read enable
+    .Writemem(ram_write_enable),                  // RAM write enable
+    .data_out(ram_result)                            // RAM data output
 );
 
 // Memory Register Select Mux: Selects between data from RAM and ALU result.
