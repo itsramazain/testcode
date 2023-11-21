@@ -50,7 +50,7 @@ module ControlUnit (
 | jal         | 000011  | No function     |
 | lw          | 100011  | No function     |
 | sw          | 101011  | No function     |
-| slt         | 000000  | 101010          |
+| slt         | 000000  | 10 1010         |
 | BGT         | 001111  | Upper imm       |
 | BLT         | 110000  | Load linked     |
 | BLE         | 100101  | Load half word  |
@@ -97,7 +97,7 @@ localparam FUN_SRL  =6'b000010;
 localparam FUN_SUBU= 6'b100011;
 localparam FUN_JR  = 6'b001001;
 localparam FUN_SLT = 6'b101010;
-
+localparam FUN_NOP = 6'b000000;
 
 always@(posedge clk)
 begin 
@@ -130,6 +130,10 @@ begin
 			OP_ADD:
 			begin
 				case(instruction[5:0])
+					FUN_NOP:
+					begin
+					
+					end
 					FUN_ADD:
 					begin
 						pc_increment <= 1'b1;
@@ -481,6 +485,27 @@ begin
 					end
 					
 				OP_SW:
+					
+					begin
+					pc_increment <= 1'b1;
+					alu_op <= 4'b0010;
+            	alu_src <= 1'b0;
+            	ram_write_enable <= 1'b1;
+            	read_register_1 <= instruction[25:21];
+            	read_register_2 <= instruction[20:16];
+					write_register <= 5'b0;
+					jump<=0;
+					jr<=0;jal<=0;
+					branchnotequal<=0;
+					brachlessthat<=0;
+					branchgreaterthan<=0;
+					branchlessthanorequal<=0;
+					branchgreaterthanorequal<=0;
+					brancheq<=0;					  
+					end
+				
+				
+				OP_LW:
 					begin
 					pc_increment <= 1'b1;
 					alu_op <= 4'b0010;
@@ -500,26 +525,6 @@ begin
 					branchgreaterthanorequal<=0;
 					brancheq<=0;				
 					end
-				
-				OP_LW:
-					begin
-					pc_increment <= 1'b1;
-					alu_op <= 4'b0010;
-            	alu_src <= 1'b0;
-            	ram_write_enable <= 1'b1;
-            	read_register_1 <= instruction[25:21];
-            	read_register_2 <= instruction[20:16];
-					write_register <= 5'b0;
-					jump<=0;
-					jr<=0;jal<=0;
-					branchnotequal<=0;
-					brachlessthat<=0;
-					branchgreaterthan<=0;
-					branchlessthanorequal<=0;
-					branchgreaterthanorequal<=0;
-					brancheq<=0;					  
-					end
-				
 				
 				OP_JUMP:
 					begin

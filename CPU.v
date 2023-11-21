@@ -82,8 +82,10 @@ assign register_write_enable_test = write_en;
 
 // Selected Register address for Write - 5 bits
 wire [4:0] write_register;     // Write Register   
-output [4:0] selected_write_register_address_test;
-assign selected_write_register_address_test = write_register;
+output reg [4:0] selected_write_register_address_test;
+always @(*) begin
+  selected_write_register_address_test = write_register;
+end
 
 // Data to Write in Register - 32 bits
 wire [31:0] reg_or_mem_or_ra;  
@@ -319,7 +321,7 @@ RegisterFile Register_File (
     .Reset(reset),                               // Reset signal
     .read_register_1(read_register_1),           // Read register 1 address
     .read_register_2(read_register_2),           // Read register 2 address
-    .reg_write_address(write_register),       // Register address for write (if used)
+    .reg_write_address(selected_write_register_address_test),       // Register address for write (if used)
     .reg_write_enable(write_en),                 // Register write enable signal
     .write_data(reg_or_mem_or_ra),               // Data to be written to the register file
     .read_data_1(alu_operand_A),                 // Data read from read_register_1
@@ -361,7 +363,7 @@ SignExtendImmediate sign_extension (
 
 RAM32x1024 RAM (
     .address(ram_address),                    // RAM address
-    .clock(MAX10_CLK1_50),                    // Clock input
+    .clock(MAX10_CLK1_50),                             // Clock input
     .data(alu_operand_B),                     // Data input to RAM
     .rden(ram_read_enable),                   // RAM read enable
     .wren(ram_write_enable),                  // RAM write enable
