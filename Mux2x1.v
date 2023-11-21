@@ -1,9 +1,13 @@
 module Mux2x1 (
-    input [31:0] i0,  // Input data for '0' selector
-    input [31:0] i1,  // Input data for '1' selector
-    input sel,        // Selection control (0 for 'i0', 1 for 'i1')
-    output reg [31:0] out  // Output data based on selection
+	
+    i0,i1,out,sel
 );
+
+parameter n=32;
+input [n-1:0] i0;  // Input data for '0' selector
+input [n-1:0] i1;  // Input data for '1' selector
+    input sel;        // Selection control (0 for 'i0', 1 for 'i1')
+    output reg [n-1:0] out;  // Output data based on selection
 
     always @(*) begin
         if (sel) begin
